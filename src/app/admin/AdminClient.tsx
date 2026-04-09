@@ -40,6 +40,30 @@ export default function AdminClient({ user, stats, cards, profiles }: Props) {
   const [saveErr, setSaveErr] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+  const [seedMsg, setSeedMsg] = useState("");
+  const [backfilling, setBackfilling] = useState(false);
+  const [backfillMsg, setBackfillMsg] = useState("");
+
+  async function handleSeed() {
+    setSeeding(true); setSeedMsg("");
+    try {
+      const res = await fetch("/api/seed", { method: "POST" });
+      const data = await res.json();
+      if (data.error) { setSeedMsg(`Error: ${data.error}`); } else { setSeedMsg(`Inserted ${data.summary.inserted}, skipped ${data.summary.skipped}`); router.refresh(); }
+    } catch { setSeedMsg("Seed request failed"); }
+    setSeeding(false);
+  }
+
+  async function handleBackfillImages() {
+    setBackfilling(true); setBackfillMsg("");
+    try {
+      const res = await fetch("/api/ebay/backfill?limit=20", { method: "POST" });
+      const data = await res.json();
+      if (data.error) { setBackfillMsg(`Error: ${data.error}`); } else { setBackfillMsg(`Updated ${data.updated}/${data.total} card images`); router.refresh(); }
+    } catch { setBackfillMsg("Backfill request failed"); }
+    setBackfilling(false);
+  }
 
   const filtered = useMemo(() => cards.filter((c) => {
     const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || (c.player_name ?? "").toLowerCase().includes(search.toLowerCase());
@@ -75,8 +99,20 @@ export default function AdminClient({ user, stats, cards, profiles }: Props) {
             <h1 className="text-xl font-semibold">Admin Dashboard</h1>
             <p className="text-default-400 text-sm mt-0.5">Manage cards, users, and data.</p>
           </div>
-          <Button onPress={openAdd} color="primary" size="sm" startContent={<Icon icon="solar:add-circle-linear" width={16} />}>Add Card</Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button onPress={handleSeed} isLoading={seeding} size="sm" variant="flat" color="secondary"
+              startContent={<Icon icon="solar:database-linear" width={16} />}>
+              Seed Cards
+            </Button>
+            <Button onPress={handleBackfillImages} isLoading={backfilling} size="sm" variant="flat" color="warning"
+              startContent={<Icon icon="solar:gallery-linear" width={16} />}>
+              Fetch Images
+            </Button>
+            <Button onPress={openAdd} color="primary" size="sm" startContent={<Icon icon="solar:add-circle-linear" width={16} />}>Add Card</Button>
+          </div>
         </div>
+        {seedMsg && <div className="px-3 py-2 rounded-lg bg-secondary/10 text-secondary text-xs mb-4">{seedMsg}</div>}
+        {backfillMsg && <div className="px-3 py-2 rounded-lg bg-warning/10 text-warning text-xs mb-4">{backfillMsg}</div>}
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <KpiCard title="Total Cards" value={stats.cardCount.toLocaleString()} change={`${stats.cardCount}`} changeType="positive" icon="solar:layers-linear" />
@@ -97,7 +133,18 @@ export default function AdminClient({ user, stats, cards, profiles }: Props) {
               <Card className="border border-default-200 bg-content1"><CardBody className="p-0"><div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="border-b border-default-200 text-default-500 text-[0.65rem] uppercase tracking-wider"><th className="px-4 py-2.5 text-left font-medium">Name</th><th className="px-4 py-2.5 text-left hidden md:table-cell font-medium">Player</th><th className="px-4 py-2.5 text-left hidden lg:table-cell font-medium">Set / Year</th><th className="px-4 py-2.5 text-left font-medium">Sport</th><th className="px-4 py-2.5 text-right font-medium">Actions</th></tr></thead>
                 <tbody>{paginated.length === 0 ? <tr><td colSpan={5} className="px-4 py-10 text-center text-default-400 text-xs">No cards found.</td></tr> : paginated.map((card) => (
                   <tr key={card.id} className="border-b border-default-100 hover:bg-default-50 transition-colors">
-                    <td className="px-4 py-2.5 text-xs font-medium">{card.name}</td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center gap-2">
+                        {card.image_url ? (
+                          <img src={card.image_url} alt="" className="w-8 h-10 object-contain rounded border border-default-200 shrink-0" />
+                        ) : (
+                          <div className="w-8 h-10 rounded border border-default-200 bg-default-100 flex items-center justify-center shrink-0">
+                            <span className="text-[0.5rem] font-mono text-default-400">N/A</span>
+                          </div>
+                        )}
+                        <span className="text-xs font-medium">{card.name}</span>
+                      </div>
+                    </td>
                     <td className="px-4 py-2.5 text-xs text-default-400 hidden md:table-cell">{card.player_name ?? "-"}</td>
                     <td className="px-4 py-2.5 text-xs text-default-400 hidden lg:table-cell">{card.card_set ?? "-"}{card.year ? ` · ${card.year}` : ""}</td>
                     <td className="px-4 py-2.5"><span className="flex items-center gap-1.5"><SportBadge sport={card.sport} size="xs" /><span className="text-[0.65rem]">{card.sport ?? "-"}</span></span></td>

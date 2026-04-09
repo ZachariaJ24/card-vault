@@ -274,8 +274,12 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
             {/* Card image */}
             <Card className="border border-default-200 bg-content1">
               <CardBody className="p-4">
-                <div className="w-full aspect-[2.5/3.5] rounded-lg bg-default-100 border border-default-200 flex items-center justify-center mb-3">
-                  <span className="text-3xl font-bold font-mono text-default-300">{playerInitials(card.player_name)}</span>
+                <div className="w-full aspect-[2.5/3.5] rounded-lg bg-default-100 border border-default-200 flex items-center justify-center mb-3 overflow-hidden">
+                  {card.image_url ? (
+                    <img src={card.image_url} alt={card.player_name ?? card.name} className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="text-3xl font-bold font-mono text-default-300">{playerInitials(card.player_name)}</span>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-1.5 justify-center">
                   {card.sport && <Chip size="sm" variant="flat" classNames={{ content: "text-[0.6rem]" }}>{card.sport}</Chip>}
