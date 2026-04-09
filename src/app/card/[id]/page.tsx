@@ -34,6 +34,7 @@ export default async function CardDetailPage({ params }: Props) {
         card_set: mockCard.card_set,
         sport: mockCard.sport,
         team: mockCard.team,
+        grade: mockCard.grade,
         description: null,
         image_url: null,
         created_at: new Date().toISOString(),
@@ -46,6 +47,7 @@ export default async function CardDetailPage({ params }: Props) {
         card_set: null,
         sport: null,
         team: null,
+        grade: null,
         description: null,
         image_url: null,
         created_at: new Date().toISOString(),
@@ -70,12 +72,25 @@ export default async function CardDetailPage({ params }: Props) {
     inWatchlist = !!data;
   }
 
+  // Find other grade variants of the same base card
+  let gradeVariants: { id: string; grade: string }[] = [];
+  if (resolvedCard.name) {
+    const { data: variants } = await supabase
+      .from("cards")
+      .select("id, grade")
+      .eq("name", resolvedCard.name)
+      .neq("id", resolvedCard.id)
+      .order("grade");
+    gradeVariants = (variants ?? []).map((v) => ({ id: v.id, grade: v.grade ?? "RAW" }));
+  }
+
   return (
     <CardDetailClient
       card={resolvedCard}
       chartData={chartData}
       user={user}
       inWatchlist={inWatchlist}
+      gradeVariants={gradeVariants}
     />
   );
 }

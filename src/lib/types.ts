@@ -6,6 +6,7 @@ export interface Card {
   card_set: string | null;
   sport: string | null;
   team: string | null;
+  grade: string | null;
   description: string | null;
   image_url: string | null;
   created_at: string;

@@ -20,6 +20,7 @@ interface Props {
   chartData: MockPricePoint[];
   user: User | null;
   inWatchlist: boolean;
+  gradeVariants: { id: string; grade: string }[];
 }
 
 const GRADE_PRICES = [
@@ -57,7 +58,7 @@ function generateOrderBook(basePrice: number) {
   return { bids, asks };
 }
 
-export default function CardDetailClient({ card, chartData, user, inWatchlist: initialWatchlist }: Props) {
+export default function CardDetailClient({ card, chartData, user, inWatchlist: initialWatchlist, gradeVariants }: Props) {
   const [watched, setWatched] = useState(initialWatchlist);
   const [watchLoading, setWatchLoading] = useState(false);
   const [period, setPeriod] = useState<"7d" | "30d" | "90d">("30d");
@@ -99,6 +100,12 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
           <Link href="/" className="hover:text-primary transition-colors">Market</Link>
           <Icon icon="solar:alt-arrow-right-linear" width={12} />
           <span className="text-foreground">{card.player_name ?? card.name}</span>
+          {card.grade && (
+            <>
+              <Icon icon="solar:alt-arrow-right-linear" width={12} />
+              <Chip size="sm" variant="flat" color="primary" classNames={{ content: "text-[0.6rem] font-mono font-semibold" }}>{card.grade}</Chip>
+            </>
+          )}
         </div>
 
         {/* Top: Price header bar */}
@@ -108,13 +115,18 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
               <span className="text-lg font-bold font-mono text-default-400">{playerInitials(card.player_name)}</span>
             </div>
             <div>
-              <h1 className="text-lg font-semibold">{card.player_name ?? card.name}</h1>
-              <p className="text-xs text-default-400">{card.card_set} &middot; {card.year} &middot; {card.team}</p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-semibold">{card.player_name ?? card.name}</h1>
+                {card.grade && (
+                  <Chip size="sm" variant="solid" color="primary" classNames={{ content: "text-[0.6rem] font-mono font-bold" }}>{card.grade}</Chip>
+                )}
+              </div>
+              <p className="text-xs text-default-400">{card.card_set} &middot; {card.year}{card.team ? ` · ${card.team}` : ""}</p>
             </div>
           </div>
           <div className="flex items-end gap-6">
             <div className="text-right">
-              <p className="text-[0.65rem] text-default-400 uppercase tracking-wider">Price (PSA 10)</p>
+              <p className="text-[0.65rem] text-default-400 uppercase tracking-wider">Price ({card.grade ?? "RAW"})</p>
               <p className="text-2xl font-bold font-mono">{formatCurrency(basePrice)}</p>
             </div>
             <div className="text-right">
@@ -169,7 +181,7 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
                 year: card.year,
                 cardSet: card.card_set,
                 sport: card.sport,
-                grade: "PSA 10",
+                grade: card.grade ?? "RAW",
               };
               const buyLinks = getBuyLinks(cardInfo);
               const sellLinks = getSellLinks(cardInfo);
@@ -281,17 +293,41 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
                       ))}
                     </div>
                   </Tab>
-                  <Tab key="grades" title="Grades">
-                    <div className="px-4 pb-4 space-y-1.5">
-                      {GRADE_PRICES.map((g) => (
-                        <div key={g.grade} className="flex items-center justify-between p-2.5 rounded-lg bg-default-50 border border-default-100">
-                          <Chip size="sm" variant="flat" classNames={{ content: "text-[0.65rem] font-mono" }}>{g.grade}</Chip>
-                          <div>
-                            <span className="font-mono font-semibold text-sm">{formatCurrency(Math.round(basePrice * g.multiplier))}</span>
-                            <span className="text-[0.6rem] text-default-400 ml-2">{g.multiplier === 1 ? "base" : `${Math.round(g.multiplier * 100)}%`}</span>
-                          </div>
+                  <Tab key="grades" title="Other Grades">
+                    <div className="px-4 pb-4">
+                      {/* Current grade */}
+                      <div className="flex items-center justify-between p-2.5 rounded-lg bg-primary/5 border border-primary/20 mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <Chip size="sm" variant="solid" color="primary" classNames={{ content: "text-[0.65rem] font-mono font-bold" }}>{card.grade ?? "RAW"}</Chip>
+                          <span className="text-[0.6rem] text-primary font-medium">Current</span>
                         </div>
-                      ))}
+                        <span className="font-mono font-semibold text-sm">{formatCurrency(basePrice)}</span>
+                      </div>
+                      {/* Other grade variants from DB */}
+                      {gradeVariants.length > 0 ? (
+                        <div className="space-y-1.5">
+                          {gradeVariants.map((v) => (
+                            <Link key={v.id} href={`/card/${v.id}`}>
+                              <div className="flex items-center justify-between p-2.5 rounded-lg bg-default-50 border border-default-100 hover:border-default-300 transition-colors cursor-pointer">
+                                <Chip size="sm" variant="flat" classNames={{ content: "text-[0.65rem] font-mono" }}>{v.grade}</Chip>
+                                <div className="flex items-center gap-1.5 text-xs text-primary">
+                                  View <Icon icon="solar:alt-arrow-right-linear" width={12} />
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5">
+                          {GRADE_PRICES.filter((g) => g.grade !== (card.grade ?? "RAW")).map((g) => (
+                            <div key={g.grade} className="flex items-center justify-between p-2.5 rounded-lg bg-default-50 border border-default-100">
+                              <Chip size="sm" variant="flat" classNames={{ content: "text-[0.65rem] font-mono" }}>{g.grade}</Chip>
+                              <span className="font-mono font-semibold text-sm text-default-400">{formatCurrency(Math.round(basePrice * g.multiplier))}</span>
+                            </div>
+                          ))}
+                          <p className="text-[0.6rem] text-default-300 text-center mt-2">Estimated prices (seed cards to get real grade links)</p>
+                        </div>
+                      )}
                     </div>
                   </Tab>
                   <Tab key="pop" title="Population">
