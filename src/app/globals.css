@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --navy-900: #060d18;
@@ -15,27 +17,25 @@
   --muted: #64748b;
 }
 
-@theme inline {
-  --color-background: var(--navy-900);
-  --color-foreground: var(--ice);
-  --color-navy-900: var(--navy-900);
-  --color-navy-800: var(--navy-800);
-  --color-navy-700: var(--navy-700);
-  --color-navy-600: var(--navy-600);
-  --color-electric: var(--electric);
-  --color-electric-dim: var(--electric-dim);
-  --color-gold: var(--gold);
-  --color-gold-bright: var(--gold-bright);
-  --color-ice: var(--ice);
-  --color-green: var(--green);
-  --color-red: var(--red);
-  --color-muted: var(--muted);
-  --font-sans: system-ui, -apple-system, sans-serif;
+body {
+  background: var(--navy-900);
+  color: var(--ice);
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
-body { background: var(--navy-900); color: var(--ice); }
 .glow-blue { box-shadow: 0 0 20px rgba(0,180,255,0.15), 0 0 40px rgba(0,180,255,0.05); }
 .glow-gold { box-shadow: 0 0 20px rgba(245,158,11,0.2), 0 0 40px rgba(245,158,11,0.05); }
-.card-glass { background: linear-gradient(135deg, rgba(15,29,50,0.8), rgba(10,22,40,0.9)); border: 1px solid rgba(0,180,255,0.1); backdrop-filter: blur(10px); }
+.card-glass {
+  background: linear-gradient(135deg, rgba(15,29,50,0.8), rgba(10,22,40,0.9));
+  border: 1px solid rgba(0,180,255,0.1);
+  backdrop-filter: blur(10px);
+}
+
 @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .animate-ticker { animation: ticker 30s linear infinite; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--navy-900); }
+::-webkit-scrollbar-thumb { background: var(--navy-600); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--electric-dim); }
