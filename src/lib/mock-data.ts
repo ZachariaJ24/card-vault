@@ -66,7 +66,7 @@ export const TRENDING_CHANGES = [5.2, -2.1, 12.4, 1.8, -0.5, -1.3, 3.6, 18.7, 0.
 /** Volume data per card (mock) */
 export const MOCK_VOLUMES = [342, 128, 567, 234, 189, 91, 276, 412, 3, 198];
 
-export const SPORTS_LIST = ["Hockey", "Baseball", "Basketball", "Football", "Soccer", "Pokemon"];
+export const SPORTS_LIST = ["Hockey", "Baseball", "Basketball", "Football", "Soccer", "Pokemon", "Magic"];
 
 export const GRADE_OPTIONS = [
   "PSA 10", "PSA 9", "PSA 8", "PSA 7",

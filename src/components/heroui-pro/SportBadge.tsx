@@ -9,6 +9,7 @@ const SPORT_CONFIG: Record<string, { tag: string; color: string; bg: string }> =
   Football:   { tag: "NFL",  color: "text-emerald-400", bg: "bg-emerald-500/10" },
   Soccer:     { tag: "FIFA", color: "text-green-400",  bg: "bg-green-500/10" },
   Pokemon:    { tag: "TCG",  color: "text-yellow-400", bg: "bg-yellow-500/10" },
+  Magic:      { tag: "MTG",  color: "text-purple-400", bg: "bg-purple-500/10" },
 };
 
 const FALLBACK = { tag: "OTH", color: "text-default-400", bg: "bg-default-100" };

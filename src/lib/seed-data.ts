@@ -60,4 +60,16 @@ export const SEED_CARDS = [
   { name: "1999 Base Set #16 Holo", player_name: "Zapdos", year: 1999, card_set: "Base Set", sport: "Pokemon", team: null },
   { name: "2006 EX Dragon Frontiers #100 Gold Star", player_name: "Charizard", year: 2006, card_set: "EX Dragon Frontiers", sport: "Pokemon", team: null },
   { name: "2023 Scarlet & Violet 151 #199 Illustration Rare", player_name: "Mew", year: 2023, card_set: "Scarlet & Violet 151", sport: "Pokemon", team: null },
+
+  // --- Magic: The Gathering ---
+  { name: "Black Lotus (Alpha)", player_name: "Black Lotus", year: 1993, card_set: "Alpha", sport: "Magic", team: null },
+  { name: "Ancestral Recall (Alpha)", player_name: "Ancestral Recall", year: 1993, card_set: "Alpha", sport: "Magic", team: null },
+  { name: "Mox Sapphire (Alpha)", player_name: "Mox Sapphire", year: 1993, card_set: "Alpha", sport: "Magic", team: null },
+  { name: "Time Walk (Alpha)", player_name: "Time Walk", year: 1993, card_set: "Alpha", sport: "Magic", team: null },
+  { name: "Underground Sea (Revised)", player_name: "Underground Sea", year: 1994, card_set: "Revised Edition", sport: "Magic", team: null },
+  { name: "Jace, the Mind Sculptor (Worldwake)", player_name: "Jace, the Mind Sculptor", year: 2010, card_set: "Worldwake", sport: "Magic", team: null },
+  { name: "Liliana of the Veil (Innistrad)", player_name: "Liliana of the Veil", year: 2011, card_set: "Innistrad", sport: "Magic", team: null },
+  { name: "Ragavan, Nimble Pilferer (MH2)", player_name: "Ragavan, Nimble Pilferer", year: 2021, card_set: "Modern Horizons 2", sport: "Magic", team: null },
+  { name: "The One Ring (LTR)", player_name: "The One Ring", year: 2023, card_set: "Lord of the Rings", sport: "Magic", team: null },
+  { name: "Sheoldred, the Apocalypse (DMU)", player_name: "Sheoldred, the Apocalypse", year: 2022, card_set: "Dominaria United", sport: "Magic", team: null },
 ];
