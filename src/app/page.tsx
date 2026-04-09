@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
+import type { User } from '@supabase/supabase-js';
 
 const SPORTS = ['Hockey', 'Baseball', 'Basketball', 'Football', 'Soccer', 'Pokemon'];
 
@@ -24,6 +26,23 @@ const STATS = [
 
 export default function Home() {
   const [email, setEmail] = useState('');
+  const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      setUser(user);
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single();
+        setIsAdmin(data?.is_admin === true);
+      }
+    });
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -57,10 +76,21 @@ export default function Home() {
             <a href="#sports" className="hover:text-electric transition-colors">Sports</a>
           </div>
           <div className="flex items-center gap-3">
-            <button className="text-sm text-muted hover:text-ice transition-colors">Log in</button>
-            <button className="text-sm bg-gold hover:bg-gold-bright text-navy-900 font-semibold px-4 py-2 rounded-lg transition-colors">
-              Get Started
-            </button>
+            {user ? (
+              <>
+                <a href="/dashboard" className="text-sm text-electric font-medium hover:text-white transition-colors">Dashboard</a>
+                {isAdmin && (
+                  <a href="/admin" className="text-sm text-gold font-medium hover:text-gold-bright transition-colors">Admin</a>
+                )}
+              </>
+            ) : (
+              <>
+                <a href="/login" className="text-sm text-muted hover:text-ice transition-colors">Log in</a>
+                <a href="/login" className="text-sm bg-gold hover:bg-gold-bright text-navy-900 font-semibold px-4 py-2 rounded-lg transition-colors">
+                  Get Started
+                </a>
+              </>
+            )}
           </div>
         </div>
       </nav>
