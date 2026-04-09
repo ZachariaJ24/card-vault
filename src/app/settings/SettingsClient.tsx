@@ -50,6 +50,23 @@ export default function SettingsClient({ user, profile }: Props) {
     setPwLoading(false);
   }
 
+  const [stripeLoading, setStripeLoading] = useState(false);
+  const stripeOnboarded = profile?.stripe_onboarded === true;
+
+  async function handleStripeConnect() {
+    setStripeLoading(true);
+    try {
+      const res = await fetch("/api/stripe/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id, email: user.email }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch { /* ignore */ }
+    setStripeLoading(false);
+  }
+
   async function handleDeleteAccount() {
     setDeleteLoading(true); await supabase.auth.signOut(); router.push("/"); router.refresh();
   }
@@ -80,6 +97,42 @@ export default function SettingsClient({ user, profile }: Props) {
             </div>
             {isAdmin && <div className="py-3 border-b border-default-100"><p className="text-[0.65rem] text-default-400 uppercase tracking-wider mb-0.5">Role</p><Chip size="sm" color="warning" variant="flat">Admin</Chip></div>}
             <div className="py-3"><p className="text-[0.65rem] text-default-400 uppercase tracking-wider mb-0.5">Member Since</p><p className="text-sm">{profile?.created_at ? new Date(profile.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "-"}</p></div>
+          </CardBody>
+        </Card>
+
+        {/* Stripe Connect */}
+        <Card className={`border ${stripeOnboarded ? "border-success/30" : "border-default-200"} bg-content1 mb-4`}>
+          <CardHeader className="px-4 pt-4 pb-0">
+            <div className="flex items-center gap-2">
+              <Icon icon="simple-icons:stripe" className="text-[#635BFF]" width={18} />
+              <h2 className="font-semibold text-sm">Seller Payments</h2>
+              {stripeOnboarded && <Chip size="sm" color="success" variant="flat" classNames={{ content: "text-[0.6rem]" }}>Connected</Chip>}
+            </div>
+          </CardHeader>
+          <CardBody className="p-4">
+            {stripeOnboarded ? (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-default-600">Your Stripe account is connected and ready to receive payments.</p>
+                  <p className="text-[0.65rem] text-default-400 mt-0.5">1% platform fee on each sale. Payouts go directly to your bank.</p>
+                </div>
+                <Button as="a" href="/sell" size="sm" color="success" variant="flat"
+                  startContent={<Icon icon="solar:tag-price-linear" width={14} />}>
+                  Sell a Card
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-default-600">Connect a Stripe account to start selling cards on the marketplace.</p>
+                  <p className="text-[0.65rem] text-default-400 mt-0.5">Takes about 2 minutes. Required to list cards for sale.</p>
+                </div>
+                <Button onPress={handleStripeConnect} isLoading={stripeLoading} size="sm" color="primary"
+                  startContent={<Icon icon="simple-icons:stripe" width={14} />}>
+                  Connect Stripe
+                </Button>
+              </div>
+            )}
           </CardBody>
         </Card>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button, Card, CardBody, CardHeader, Chip, Tab, Tabs, Divider, cn,
   Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,
@@ -62,6 +62,23 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
   const [watched, setWatched] = useState(initialWatchlist);
   const [watchLoading, setWatchLoading] = useState(false);
   const [period, setPeriod] = useState<"7d" | "30d" | "90d">("30d");
+  const [listings, setListings] = useState<{ id: string; price: number; seller: string; created_at: string }[]>([]);
+
+  // Fetch active listings for this card
+  useEffect(() => {
+    fetch(`/api/listings?card_id=${card.id}&limit=10`)
+      .then((r) => r.json())
+      .then((data) => {
+        const items = (data.listings ?? []).map((l: Record<string, unknown>) => ({
+          id: l.id as string,
+          price: l.price as number,
+          seller: ((l.profiles as Record<string, unknown>)?.display_name ?? (l.profiles as Record<string, unknown>)?.email ?? "Seller") as string,
+          created_at: l.created_at as string,
+        }));
+        setListings(items);
+      })
+      .catch(() => {});
+  }, [card.id]);
 
   const basePrice = chartData.length ? chartData[chartData.length - 1].price : 100;
   const firstPrice = chartData.length ? chartData[0].price : 100;
@@ -426,6 +443,28 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
                 </div>
               </CardBody>
             </Card>
+
+            {/* For Sale listings */}
+            {listings.length > 0 && (
+              <Card className="border border-success/20 bg-content1">
+                <CardHeader className="px-4 pt-3 pb-0">
+                  <div className="flex items-center justify-between w-full">
+                    <h3 className="text-[0.65rem] font-semibold uppercase tracking-wider text-success">For Sale ({listings.length})</h3>
+                    <Button as={Link} href="/marketplace" size="sm" variant="light" className="text-default-400 text-[0.6rem] h-6">All Listings</Button>
+                  </div>
+                </CardHeader>
+                <CardBody className="px-4 pt-2 pb-3 space-y-1.5">
+                  {listings.slice(0, 5).map((l) => (
+                    <Link key={l.id} href={`/marketplace/${l.id}`}>
+                      <div className="flex items-center justify-between p-2 rounded-lg bg-default-50 border border-default-100 hover:border-success/30 transition-colors">
+                        <span className="text-[0.65rem] text-default-400">{typeof l.seller === "string" ? l.seller.split("@")[0] : "Seller"}</span>
+                        <span className="font-mono font-semibold text-xs text-success">${(l.price / 100).toFixed(2)}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </CardBody>
+              </Card>
+            )}
 
             {/* Order book */}
             <Card className="border border-default-200 bg-content1">

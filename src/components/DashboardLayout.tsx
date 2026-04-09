@@ -28,6 +28,7 @@ const NAV_SECTIONS = [
     title: "Market",
     items: [
       { key: "market", label: "Market", href: "/", icon: "solar:chart-2-linear", iconActive: "solar:chart-2-bold" },
+      { key: "marketplace", label: "Marketplace", href: "/marketplace", icon: "solar:shop-linear", iconActive: "solar:shop-bold" },
       { key: "movers", label: "Market Movers", href: "/movers", icon: "solar:fire-linear", iconActive: "solar:fire-bold" },
       { key: "alerts", label: "Price Alerts", href: "/alerts", icon: "solar:bell-linear", iconActive: "solar:bell-bold" },
     ],
@@ -38,6 +39,8 @@ const NAV_SECTIONS = [
       { key: "portfolio", label: "Portfolio", href: "/portfolio", icon: "solar:wallet-money-linear", iconActive: "solar:wallet-money-bold" },
       { key: "watchlist", label: "Watchlist", href: "/watchlist", icon: "solar:eye-linear", iconActive: "solar:eye-bold" },
       { key: "collection", label: "My Collection", href: "/collection", icon: "solar:box-linear", iconActive: "solar:box-bold" },
+      { key: "sell", label: "Sell a Card", href: "/sell", icon: "solar:tag-price-linear", iconActive: "solar:tag-price-bold" },
+      { key: "orders", label: "My Orders", href: "/orders", icon: "solar:bag-check-linear", iconActive: "solar:bag-check-bold" },
       { key: "reports", label: "Reports", href: "/reports", icon: "solar:document-text-linear", iconActive: "solar:document-text-bold" },
     ],
   },
@@ -53,8 +56,11 @@ const ADMIN_SECTION = {
 function resolveActiveKey(pathname: string): string {
   if (pathname === "/" || pathname === "/market") return "market";
   if (pathname.startsWith("/card/")) return "market";
+  if (pathname.startsWith("/marketplace")) return "marketplace";
   if (pathname.startsWith("/portfolio")) return "portfolio";
   if (pathname.startsWith("/watchlist")) return "watchlist";
+  if (pathname.startsWith("/sell")) return "sell";
+  if (pathname.startsWith("/orders")) return "orders";
   if (pathname.startsWith("/collection")) return "collection";
   if (pathname.startsWith("/movers")) return "movers";
   if (pathname.startsWith("/alerts")) return "alerts";
