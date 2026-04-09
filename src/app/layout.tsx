@@ -3,8 +3,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "CardVault | Sports Card Market Tracker",
-  description: "Track sports card values like the stock market. Real-time pricing, portfolio tracking, and market analytics.",
+  title: "CardVault | Sports Card Market Exchange",
+  description: "Track sports card values like the stock market. Real-time pricing, portfolio tracking, and market analytics for serious collectors.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
