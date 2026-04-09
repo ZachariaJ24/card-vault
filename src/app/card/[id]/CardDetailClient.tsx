@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, CardBody, CardHeader, Chip, Tab, Tabs, Divider, cn } from "@heroui/react";
+import {
+  Button, Card, CardBody, CardHeader, Chip, Tab, Tabs, Divider, cn,
+  Dropdown, DropdownTrigger, DropdownMenu, DropdownItem,
+} from "@heroui/react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -10,6 +13,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { Card as CardType, MockPricePoint } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
 import { formatCurrency, formatChange, playerInitials } from "@/lib/utils";
+import { getBuyLinks, getSellLinks, getPrimaryBuyLink, type BuyLink } from "@/lib/buy-links";
 
 interface Props {
   card: CardType;
@@ -158,27 +162,102 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
             </Card>
 
             {/* Buy/Sell buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                fullWidth
-                size="lg"
-                color="success"
-                className="font-semibold"
-                startContent={<Icon icon="solar:arrow-right-up-linear" width={18} />}
-              >
-                Buy
-              </Button>
-              <Button
-                fullWidth
-                size="lg"
-                color="danger"
-                variant="flat"
-                className="font-semibold"
-                startContent={<Icon icon="solar:arrow-right-down-linear" width={18} />}
-              >
-                Sell
-              </Button>
-            </div>
+            {(() => {
+              const cardInfo = {
+                playerName: card.player_name ?? card.name,
+                cardName: card.name,
+                year: card.year,
+                cardSet: card.card_set,
+                sport: card.sport,
+                grade: "PSA 10",
+              };
+              const buyLinks = getBuyLinks(cardInfo);
+              const sellLinks = getSellLinks(cardInfo);
+              const primary = buyLinks[0];
+
+              return (
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Buy button + dropdown */}
+                  <div className="flex gap-1">
+                    <Button
+                      as="a"
+                      href={primary.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 font-semibold"
+                      size="lg"
+                      color="success"
+                      startContent={<Icon icon="solar:cart-large-2-linear" width={18} />}
+                    >
+                      Buy on {primary.label}
+                    </Button>
+                    {buyLinks.length > 1 && (
+                      <Dropdown>
+                        <DropdownTrigger>
+                          <Button size="lg" color="success" isIconOnly className="min-w-10">
+                            <Icon icon="solar:alt-arrow-down-linear" width={16} />
+                          </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu aria-label="Buy options">
+                          {buyLinks.map((link) => (
+                            <DropdownItem
+                              key={link.label}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              startContent={<Icon icon={link.icon} width={16} />}
+                              classNames={{ title: "text-xs" }}
+                            >
+                              Buy on {link.label}
+                            </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </Dropdown>
+                    )}
+                  </div>
+
+                  {/* Sell button + dropdown */}
+                  <div className="flex gap-1">
+                    <Button
+                      as="a"
+                      href={sellLinks[0].url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 font-semibold"
+                      size="lg"
+                      color="danger"
+                      variant="flat"
+                      startContent={<Icon icon="solar:tag-price-linear" width={18} />}
+                    >
+                      Sell
+                    </Button>
+                    {sellLinks.length > 1 && (
+                      <Dropdown>
+                        <DropdownTrigger>
+                          <Button size="lg" color="danger" variant="flat" isIconOnly className="min-w-10">
+                            <Icon icon="solar:alt-arrow-down-linear" width={16} />
+                          </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu aria-label="Sell options">
+                          {sellLinks.map((link) => (
+                            <DropdownItem
+                              key={link.label}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              startContent={<Icon icon={link.icon} width={16} />}
+                              classNames={{ title: "text-xs" }}
+                            >
+                              {link.label}
+                            </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </Dropdown>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Tabbed content */}
             <Card className="border border-default-200 bg-content1">
