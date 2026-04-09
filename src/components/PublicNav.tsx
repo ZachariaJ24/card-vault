@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@heroui/react";
+import {
+  Button, Navbar, NavbarBrand, NavbarContent, NavbarItem,
+  NavbarMenu, NavbarMenuItem, NavbarMenuToggle, Link as HeroLink, Divider,
+} from "@heroui/react";
 import Link from "next/link";
+import { Icon } from "@iconify/react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 
@@ -32,88 +36,93 @@ export default function PublicNav() {
     <Navbar
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
-      className="bg-[#060d18]/95 border-b border-[#00b4ff]/10 backdrop-blur-md"
-      maxWidth="xl"
+      classNames={{
+        base: "border-b border-default-200 bg-background/80 backdrop-blur-lg",
+        wrapper: "w-full justify-center max-w-7xl",
+        item: "hidden md:flex",
+      }}
+      height="60px"
     >
       <NavbarContent>
-        <NavbarMenuToggle className="sm:hidden text-[#64748b]" />
+        <NavbarMenuToggle className="text-default-400 md:hidden" />
         <NavbarBrand>
-          <Link href="/" className="flex items-center gap-2.5">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm text-[#060d18]"
-              style={{ background: "linear-gradient(135deg, #00b4ff, #0088cc)" }}
-            >
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-black text-sm text-white">
               CV
             </div>
-            <span className="font-bold text-white text-lg">
-              Card<span className="text-[#00b4ff]">Vault</span>
-            </span>
+            <span className="text-lg font-semibold">CardVault</span>
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-6" justify="center">
+      <NavbarContent justify="center">
         {NAV_LINKS.map((link) => (
           <NavbarItem key={link.href}>
-            <Link href={link.href} className="text-sm text-[#64748b] hover:text-white transition-colors">
+            <Link href={link.href} className="text-sm text-default-500 hover:text-foreground transition-colors">
               {link.label}
             </Link>
           </NavbarItem>
         ))}
       </NavbarContent>
 
-      <NavbarContent justify="end" className="gap-2">
-        {user ? (
-          <>
-            <NavbarItem>
-              <Button as={Link} href="/dashboard" size="sm" variant="flat"
-                className="bg-[#00b4ff]/10 text-[#00b4ff] border border-[#00b4ff]/20">
+      <NavbarContent className="hidden md:flex" justify="end">
+        <NavbarItem className="flex! gap-2">
+          {user ? (
+            <>
+              <Button as={Link} href="/dashboard" size="sm" variant="flat" color="primary">
                 Dashboard
               </Button>
-            </NavbarItem>
-            {isAdmin && (
-              <NavbarItem>
-                <Button as={Link} href="/admin" size="sm" variant="flat"
-                  className="bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20">
+              {isAdmin && (
+                <Button as={Link} href="/admin" size="sm" variant="flat" color="warning">
                   Admin
                 </Button>
-              </NavbarItem>
-            )}
-          </>
-        ) : (
-          <>
-            <NavbarItem>
-              <Button as={Link} href="/login" size="sm" variant="light" className="text-[#64748b]">
+              )}
+            </>
+          ) : (
+            <>
+              <Button as={Link} href="/login" size="sm" variant="light" className="text-default-500">
                 Log in
               </Button>
-            </NavbarItem>
-            <NavbarItem>
               <Button
-                as={Link} href="/login" size="sm"
-                className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-[#060d18] font-bold glow-gold"
+                as={Link}
+                href="/login"
+                size="sm"
+                color="primary"
+                className="font-medium"
+                endContent={<Icon icon="solar:alt-arrow-right-linear" width={16} />}
               >
                 Get Started
               </Button>
-            </NavbarItem>
-          </>
-        )}
+            </>
+          )}
+        </NavbarItem>
       </NavbarContent>
 
-      <NavbarMenu className="bg-[#060d18]/98 pt-6 gap-2">
+      <NavbarMenu className="bg-background/95 backdrop-blur-lg pt-6 pb-6">
+        <NavbarMenuItem className="mb-2">
+          <Button fullWidth as={Link} href="/login" variant="flat" color="primary">
+            {user ? "Dashboard" : "Sign In"}
+          </Button>
+        </NavbarMenuItem>
+        {!user && (
+          <NavbarMenuItem className="mb-4">
+            <Button fullWidth as={Link} href="/login" color="primary">
+              Get Started
+            </Button>
+          </NavbarMenuItem>
+        )}
+        <Divider className="my-2" />
         {NAV_LINKS.map((link) => (
           <NavbarMenuItem key={link.href}>
-            <Link href={link.href} className="text-base text-[#64748b] hover:text-white transition-colors py-2 block"
-              onClick={() => setIsMenuOpen(false)}>
+            <Link
+              href={link.href}
+              className="text-default-500 w-full py-2 block"
+              onClick={() => setIsMenuOpen(false)}
+            >
               {link.label}
             </Link>
           </NavbarMenuItem>
         ))}
-        <NavbarMenuItem>
-          <Link href="/login" className="text-base text-[#00b4ff] py-2 block"
-            onClick={() => setIsMenuOpen(false)}>
-            {user ? "Dashboard" : "Log in / Sign up"}
-          </Link>
-        </NavbarMenuItem>
       </NavbarMenu>
     </Navbar>
   );

@@ -64,28 +64,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060d18] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(0,180,255,0.07) 0%, transparent 55%)" }}
-      />
-
-      <div className="w-full max-w-md relative">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm text-[#060d18]"
-              style={{ background: "linear-gradient(135deg, #00b4ff, #0088cc)" }}>
+          <Link href="/" className="inline-flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary font-black text-sm text-white">
               CV
             </div>
-            <span className="text-2xl font-bold text-white">CardVault</span>
+            <span className="text-xl font-semibold">CardVault</span>
           </Link>
-          <p className="text-[#64748b] text-sm mt-2">{subtitles[mode]}</p>
+          <p className="text-default-500 text-sm mt-3">{subtitles[mode]}</p>
         </div>
 
-        <Card className="card-glass glow-blue" radius="lg">
-          <CardBody className="p-8">
-            <h1 className="text-xl font-bold text-white mb-6">{titles[mode]}</h1>
+        <Card className="border border-default-200 bg-content1" shadow="sm">
+          <CardBody className="p-6">
+            <h1 className="text-lg font-semibold mb-5">{titles[mode]}</h1>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
@@ -97,12 +91,8 @@ export default function LoginPage() {
                 isRequired
                 autoComplete="email"
                 variant="bordered"
-                startContent={<Icon icon="solar:letter-bold" className="text-[#64748b]" width={18} />}
-                classNames={{
-                  inputWrapper: "bg-[#060d18] border-[#00b4ff]/20 hover:border-[#00b4ff]/50 data-[focus=true]:border-[#00b4ff]",
-                  input: "text-white",
-                  label: "text-[#64748b]",
-                }}
+                startContent={<Icon icon="solar:letter-linear" className="text-default-400" width={18} />}
+                classNames={{ inputWrapper: "border-default-300" }}
               />
 
               {mode !== "reset" && (
@@ -111,44 +101,40 @@ export default function LoginPage() {
                   label="Password"
                   value={password}
                   onValueChange={setPassword}
-                  placeholder="••••••••"
+                  placeholder="Enter password"
                   isRequired
                   minLength={6}
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
                   variant="bordered"
-                  startContent={<Icon icon="solar:lock-password-bold" className="text-[#64748b]" width={18} />}
+                  startContent={<Icon icon="solar:lock-password-linear" className="text-default-400" width={18} />}
                   endContent={
-                    <button type="button" onClick={() => setShowPassword((s) => !s)} className="text-[#64748b] hover:text-white">
-                      <Icon icon={showPassword ? "solar:eye-closed-bold" : "solar:eye-bold"} width={18} />
+                    <button type="button" onClick={() => setShowPassword((s) => !s)} className="text-default-400 hover:text-foreground">
+                      <Icon icon={showPassword ? "solar:eye-closed-linear" : "solar:eye-linear"} width={18} />
                     </button>
                   }
-                  classNames={{
-                    inputWrapper: "bg-[#060d18] border-[#00b4ff]/20 hover:border-[#00b4ff]/50 data-[focus=true]:border-[#00b4ff]",
-                    input: "text-white",
-                    label: "text-[#64748b]",
-                  }}
+                  classNames={{ inputWrapper: "border-default-300" }}
                 />
               )}
 
               {mode === "login" && (
                 <div className="text-right -mt-2">
                   <button type="button" onClick={() => setMode("reset")}
-                    className="text-xs text-[#00b4ff] hover:text-white transition-colors">
+                    className="text-xs text-primary hover:underline">
                     Forgot password?
                   </button>
                 </div>
               )}
 
               {error && (
-                <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[#ef4444]/10 border border-[#ef4444]/20 text-[#ef4444] text-sm">
-                  <Icon icon="solar:danger-bold" width={16} />
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-danger/10 text-danger text-sm">
+                  <Icon icon="solar:danger-circle-linear" width={16} className="shrink-0" />
                   {error}
                 </div>
               )}
 
               {message && (
-                <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">
-                  <Icon icon="solar:check-circle-bold" width={16} />
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-success/10 text-success text-sm">
+                  <Icon icon="solar:check-circle-linear" width={16} className="shrink-0" />
                   {message}
                 </div>
               )}
@@ -157,21 +143,21 @@ export default function LoginPage() {
                 type="submit"
                 isLoading={loading}
                 fullWidth
-                size="lg"
-                className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-[#060d18] font-bold glow-gold mt-2"
+                color="primary"
+                className="font-medium mt-1"
               >
-                {loading ? "Please wait…" : mode === "login" ? "Sign In" : mode === "signup" ? "Create Account" : "Send Reset Link"}
+                {loading ? "Please wait..." : mode === "login" ? "Sign In" : mode === "signup" ? "Create Account" : "Send Reset Link"}
               </Button>
             </form>
 
-            <Divider className="my-5 bg-[#00b4ff]/10" />
+            <Divider className="my-5" />
 
-            <div className="text-center text-sm text-[#64748b]">
+            <div className="text-center text-sm text-default-500">
               {mode === "login" && (
                 <>
                   Don&apos;t have an account?{" "}
                   <button onClick={() => { setMode("signup"); setError(""); setMessage(""); }}
-                    className="text-[#00b4ff] hover:text-white transition-colors font-medium">
+                    className="text-primary hover:underline font-medium">
                     Sign up free
                   </button>
                 </>
@@ -180,24 +166,24 @@ export default function LoginPage() {
                 <>
                   Already have an account?{" "}
                   <button onClick={() => { setMode("login"); setError(""); setMessage(""); }}
-                    className="text-[#00b4ff] hover:text-white transition-colors font-medium">
+                    className="text-primary hover:underline font-medium">
                     Sign in
                   </button>
                 </>
               )}
               {mode === "reset" && (
                 <button onClick={() => { setMode("login"); setError(""); setMessage(""); }}
-                  className="text-[#00b4ff] hover:text-white transition-colors font-medium">
-                  ← Back to sign in
+                  className="text-primary hover:underline font-medium">
+                  &larr; Back to sign in
                 </button>
               )}
             </div>
           </CardBody>
         </Card>
 
-        <p className="text-center text-xs text-[#64748b] mt-5">
-          A <span className="text-[#00b4ff]">Midnight Studios</span> product · By signing up you agree to our{" "}
-          <Link href="/pricing" className="hover:text-white transition-colors">Terms</Link>
+        <p className="text-center text-xs text-default-400 mt-5">
+          Midnight Studios &middot; By signing up you agree to our{" "}
+          <Link href="/pricing" className="hover:underline">Terms</Link>
         </p>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, CardBody, CardHeader, Chip, Divider } from "@heroui/react";
+import { Button, Card, CardBody, CardHeader, Chip } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import PublicNav from "@/components/PublicNav";
@@ -10,7 +10,6 @@ import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { Card as CardType, MockPricePoint } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
 import { formatCurrency, formatChange, sportEmoji } from "@/lib/utils";
-import { GRADE_OPTIONS } from "@/lib/mock-data";
 
 interface Props {
   card: CardType;
@@ -65,75 +64,58 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
   }
 
   return (
-    <div className="min-h-screen bg-[#060d18]">
+    <div className="min-h-screen bg-background">
       <PublicNav />
 
-      <div className="max-w-6xl mx-auto px-4 py-10">
+      <div className="max-w-5xl mx-auto px-4 py-10">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-[#64748b] mb-6">
-          <Link href="/market" className="hover:text-[#00b4ff] transition-colors">Market</Link>
-          <Icon icon="solar:alt-arrow-right-bold" width={14} />
-          <span className="text-white">{card.player_name ?? card.name}</span>
+        <div className="flex items-center gap-2 text-sm text-default-400 mb-6">
+          <Link href="/market" className="hover:text-primary transition-colors">Market</Link>
+          <Icon icon="solar:alt-arrow-right-linear" width={14} />
+          <span className="text-foreground">{card.player_name ?? card.name}</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Left: Card info */}
           <div className="lg:col-span-1 space-y-4">
-            {/* Card image placeholder */}
-            <Card className="card-glass glow-blue" radius="lg">
+            <Card className="border border-default-200 bg-content1" shadow="none">
               <CardBody className="p-6 flex flex-col items-center gap-4">
-                <div className="w-full aspect-[2.5/3.5] rounded-xl bg-gradient-to-br from-[#0f1d32] to-[#0a1628] border border-[#00b4ff]/20 flex items-center justify-center">
-                  <span className="text-6xl">{sportEmoji(card.sport)}</span>
+                <div className="w-full aspect-[2.5/3.5] rounded-xl bg-default-100 border border-default-200 flex items-center justify-center">
+                  <span className="text-5xl">{sportEmoji(card.sport)}</span>
                 </div>
                 <div className="w-full text-center">
-                  <h1 className="text-xl font-black text-white">{card.player_name ?? card.name}</h1>
-                  <p className="text-[#64748b] text-sm mt-1">{card.card_set}</p>
+                  <h1 className="text-lg font-bold">{card.player_name ?? card.name}</h1>
+                  <p className="text-default-400 text-sm mt-1">{card.card_set}</p>
                 </div>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {card.sport && (
-                    <Chip size="sm" className="bg-[#00b4ff]/10 text-[#00b4ff] border border-[#00b4ff]/20">
-                      {sportEmoji(card.sport)} {card.sport}
-                    </Chip>
+                    <Chip size="sm" variant="flat">{sportEmoji(card.sport)} {card.sport}</Chip>
                   )}
                   {card.year && (
-                    <Chip size="sm" className="bg-[#0f1d32] text-[#64748b] border border-[#64748b]/20">
-                      {card.year}
-                    </Chip>
+                    <Chip size="sm" variant="flat" color="default">{card.year}</Chip>
                   )}
                   {card.team && (
-                    <Chip size="sm" className="bg-[#0f1d32] text-[#64748b] border border-[#64748b]/20">
-                      {card.team}
-                    </Chip>
+                    <Chip size="sm" variant="flat" color="default">{card.team}</Chip>
                   )}
                 </div>
               </CardBody>
             </Card>
 
-            {/* Actions */}
             <div className="space-y-2">
               {user ? (
                 <>
-                  <Button
-                    fullWidth
-                    onPress={toggleWatchlist}
-                    isLoading={watchLoading}
-                    variant="flat"
-                    className={watched
-                      ? "bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20"
-                      : "bg-[#00b4ff]/10 text-[#00b4ff] border border-[#00b4ff]/20"}
-                    startContent={<Icon icon={watched ? "solar:check-circle-bold" : "solar:eye-bold"} width={18} />}
-                  >
+                  <Button fullWidth onPress={toggleWatchlist} isLoading={watchLoading}
+                    variant="flat" color={watched ? "success" : "primary"}
+                    startContent={<Icon icon={watched ? "solar:check-circle-bold" : "solar:eye-linear"} width={18} />}>
                     {watched ? "In Watchlist" : "Add to Watchlist"}
                   </Button>
-                  <Button as={Link} href="/portfolio" fullWidth
-                    className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-[#060d18] font-bold glow-gold"
-                    startContent={<Icon icon="solar:add-circle-bold" width={18} />}>
+                  <Button as={Link} href="/portfolio" fullWidth color="primary"
+                    startContent={<Icon icon="solar:add-circle-linear" width={18} />}>
                     Add to Portfolio
                   </Button>
                 </>
               ) : (
-                <Button as={Link} href="/login" fullWidth
-                  className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-[#060d18] font-bold glow-gold">
+                <Button as={Link} href="/login" fullWidth color="primary">
                   Sign in to Track
                 </Button>
               )}
@@ -141,39 +123,32 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
           </div>
 
           {/* Right: Price + Charts */}
-          <div className="lg:col-span-2 space-y-5">
-            {/* Price header */}
-            <Card className="card-glass glow-blue" radius="lg">
+          <div className="lg:col-span-2 space-y-4">
+            <Card className="border border-default-200 bg-content1" shadow="none">
               <CardBody className="p-6">
                 <div className="flex items-start justify-between flex-wrap gap-3 mb-5">
                   <div>
-                    <p className="text-xs text-[#64748b] uppercase tracking-wider mb-1">Current Price (PSA 10)</p>
-                    <div className="text-4xl font-black text-white">{formatCurrency(basePrice)}</div>
-                    <div className={`flex items-center gap-1.5 mt-1 ${dayChange >= 0 ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
-                      <Icon icon={dayChange >= 0 ? "solar:graph-up-bold" : "solar:graph-down-bold"} width={16} />
-                      <span className="text-sm font-semibold">{formatChange(dayChange)} today</span>
+                    <p className="text-xs text-default-400 uppercase tracking-wider mb-1">Current Price (PSA 10)</p>
+                    <div className="text-3xl font-bold">{formatCurrency(basePrice)}</div>
+                    <div className={`flex items-center gap-1.5 mt-1 ${dayChange >= 0 ? "text-success" : "text-danger"}`}>
+                      <Icon icon={dayChange >= 0 ? "solar:graph-up-linear" : "solar:graph-down-linear"} width={16} />
+                      <span className="text-sm font-medium">{formatChange(dayChange)} today</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-[#64748b]">90-day return</p>
-                    <p className={`text-2xl font-bold ${totalChange >= 0 ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
+                    <p className="text-xs text-default-400">90-day return</p>
+                    <p className={`text-xl font-bold ${totalChange >= 0 ? "text-success" : "text-danger"}`}>
                       {formatChange(totalChange)}
                     </p>
                   </div>
                 </div>
 
-                {/* Period selector */}
                 <div className="flex gap-1 mb-4">
                   {(["7d", "30d", "90d"] as const).map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => setPeriod(p)}
-                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                        period === p
-                          ? "bg-[#00b4ff]/20 text-[#00b4ff] border border-[#00b4ff]/30"
-                          : "text-[#64748b] hover:text-white"
-                      }`}
-                    >
+                    <button key={p} onClick={() => setPeriod(p)}
+                      className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                        period === p ? "bg-primary/10 text-primary" : "text-default-400 hover:text-foreground"
+                      }`}>
                       {p}
                     </button>
                   ))}
@@ -183,12 +158,11 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
               </CardBody>
             </Card>
 
-            {/* Grade comparison */}
-            <Card className="card-glass" radius="lg">
+            <Card className="border border-default-200 bg-content1" shadow="none">
               <CardHeader className="px-5 pt-5 pb-0">
                 <div className="flex items-center gap-2">
-                  <Icon icon="solar:medal-ribbons-star-bold" className="text-[#f59e0b]" width={20} />
-                  <h2 className="font-bold text-white">Grade Comparison</h2>
+                  <Icon icon="solar:medal-ribbons-star-linear" className="text-warning" width={18} />
+                  <h2 className="font-semibold text-sm">Grade Comparison</h2>
                 </div>
               </CardHeader>
               <CardBody className="px-5 pt-3">
@@ -196,14 +170,12 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
                   {GRADE_PRICES.map((g) => {
                     const price = Math.round(basePrice * g.multiplier);
                     return (
-                      <div key={g.grade} className="flex items-center justify-between p-3 rounded-lg bg-[#060d18]/50 border border-[#00b4ff]/5">
-                        <Chip size="sm" variant="flat" className="bg-[#00b4ff]/10 text-[#00b4ff] border border-[#00b4ff]/20">
-                          {g.grade}
-                        </Chip>
+                      <div key={g.grade} className="flex items-center justify-between p-3 rounded-lg bg-default-50 border border-default-100">
+                        <Chip size="sm" variant="flat">{g.grade}</Chip>
                         <div className="text-right">
-                          <span className="font-bold font-mono text-white">{formatCurrency(price)}</span>
-                          <span className="text-xs text-[#64748b] ml-2">
-                            {g.multiplier === 1 ? "(base)" : `(${Math.round(g.multiplier * 100)}% of PSA 10)`}
+                          <span className="font-semibold font-mono">{formatCurrency(price)}</span>
+                          <span className="text-xs text-default-400 ml-2">
+                            {g.multiplier === 1 ? "(base)" : `(${Math.round(g.multiplier * 100)}%)`}
                           </span>
                         </div>
                       </div>
@@ -213,25 +185,22 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
               </CardBody>
             </Card>
 
-            {/* Recent sales */}
-            <Card className="card-glass" radius="lg">
+            <Card className="border border-default-200 bg-content1" shadow="none">
               <CardHeader className="px-5 pt-5 pb-0">
                 <div className="flex items-center gap-2">
-                  <Icon icon="solar:history-bold" className="text-[#22c55e]" width={20} />
-                  <h2 className="font-bold text-white">Recent Sales</h2>
+                  <Icon icon="solar:history-linear" className="text-success" width={18} />
+                  <h2 className="font-semibold text-sm">Recent Sales</h2>
                 </div>
               </CardHeader>
               <CardBody className="px-5 pt-3">
                 <div className="space-y-2">
                   {RECENT_SALES.map((sale, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-[#060d18]/50 border border-[#00b4ff]/5">
+                    <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-default-50 border border-default-100">
                       <div className="flex items-center gap-3">
-                        <Chip size="sm" variant="flat" className="bg-[#00b4ff]/10 text-[#00b4ff] border border-[#00b4ff]/20">
-                          {sale.grade}
-                        </Chip>
-                        <span className="text-xs text-[#64748b]">{sale.source} · {sale.days_ago}d ago</span>
+                        <Chip size="sm" variant="flat">{sale.grade}</Chip>
+                        <span className="text-xs text-default-400">{sale.source} &middot; {sale.days_ago}d ago</span>
                       </div>
-                      <span className="font-bold font-mono text-white">
+                      <span className="font-semibold font-mono">
                         {formatCurrency(Math.round(basePrice * sale.price_mult))}
                       </span>
                     </div>
@@ -243,9 +212,9 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
         </div>
       </div>
 
-      <footer className="border-t border-[#00b4ff]/10 py-8 mt-6">
-        <p className="text-center text-xs text-[#64748b]">
-          © {new Date().getFullYear()} CardVault · A <span className="text-[#00b4ff]">Midnight Studios</span> product
+      <footer className="border-t border-default-200 py-8 mt-6">
+        <p className="text-center text-xs text-default-400">
+          &copy; {new Date().getFullYear()} CardVault &middot; Midnight Studios
         </p>
       </footer>
     </div>

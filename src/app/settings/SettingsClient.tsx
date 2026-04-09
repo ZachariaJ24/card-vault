@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardBody, CardHeader, Button, Input, Chip, Divider, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
+import { Card, CardBody, CardHeader, Button, Input, Chip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import AppLayout from "@/components/AppLayout";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
@@ -14,10 +14,10 @@ interface Props {
   profile: Profile | null;
 }
 
-const TIER_LABELS: Record<string, { label: string; color: string }> = {
-  free: { label: "Free", color: "#64748b" },
-  pro: { label: "Pro", color: "#f59e0b" },
-  premium: { label: "Premium", color: "#00b4ff" },
+const TIER_LABELS: Record<string, { label: string; color: "default" | "warning" | "primary" }> = {
+  free: { label: "Free", color: "default" },
+  pro: { label: "Pro", color: "warning" },
+  premium: { label: "Premium", color: "primary" },
 };
 
 export default function SettingsClient({ user, profile }: Props) {
@@ -28,7 +28,6 @@ export default function SettingsClient({ user, profile }: Props) {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState("");
 
-  const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [pwLoading, setPwLoading] = useState(false);
@@ -59,7 +58,7 @@ export default function SettingsClient({ user, profile }: Props) {
     setPwLoading(true);
     const { error } = await supabase.auth.updateUser({ password: newPw });
     if (error) setPwErr(error.message);
-    else { setPwMsg("Password updated successfully!"); setCurrentPw(""); setNewPw(""); setConfirmPw(""); }
+    else { setPwMsg("Password updated successfully!"); setNewPw(""); setConfirmPw(""); }
     setPwLoading(false);
   }
 
@@ -70,112 +69,92 @@ export default function SettingsClient({ user, profile }: Props) {
     router.refresh();
   }
 
-  const inputClassNames = {
-    inputWrapper: "bg-[#060d18] border-[#00b4ff]/20 hover:border-[#00b4ff]/50 data-[focus=true]:border-[#00b4ff]",
-    input: "text-white",
-    label: "text-[#64748b]",
-  };
-
   return (
     <AppLayout user={user} isAdmin={isAdmin}>
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-white">Settings</h1>
-          <p className="text-[#64748b] mt-1 text-sm">Manage your account and preferences.</p>
+          <h1 className="text-2xl font-bold">Settings</h1>
+          <p className="text-default-500 mt-1 text-sm">Manage your account and preferences.</p>
         </div>
 
         {/* Account info */}
-        <Card className="card-glass mb-5" radius="lg">
+        <Card className="border border-default-200 bg-content1 mb-5" shadow="none">
           <CardHeader className="px-5 pt-5 pb-0">
             <div className="flex items-center gap-2">
-              <Icon icon="solar:user-circle-bold" className="text-[#00b4ff]" width={20} />
-              <h2 className="font-bold text-white">Account</h2>
+              <Icon icon="solar:user-circle-linear" className="text-primary" width={18} />
+              <h2 className="font-semibold text-sm">Account</h2>
             </div>
           </CardHeader>
-          <CardBody className="p-5 gap-4">
-            <div className="flex items-center justify-between py-3 border-b border-[#00b4ff]/10">
+          <CardBody className="p-5 gap-0">
+            <div className="flex items-center justify-between py-3 border-b border-default-100">
               <div>
-                <p className="text-xs text-[#64748b] uppercase tracking-wider mb-0.5">Email</p>
-                <p className="text-white font-medium">{user.email}</p>
+                <p className="text-xs text-default-400 uppercase tracking-wider mb-0.5">Email</p>
+                <p className="font-medium text-sm">{user.email}</p>
               </div>
-              <Chip size="sm" className="bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20">Verified</Chip>
+              <Chip size="sm" color="success" variant="flat">Verified</Chip>
             </div>
-
-            <div className="flex items-center justify-between py-3 border-b border-[#00b4ff]/10">
+            <div className="flex items-center justify-between py-3 border-b border-default-100">
               <div>
-                <p className="text-xs text-[#64748b] uppercase tracking-wider mb-0.5">Subscription</p>
-                <p className="font-medium" style={{ color: tierInfo.color }}>{tierInfo.label}</p>
+                <p className="text-xs text-default-400 uppercase tracking-wider mb-0.5">Subscription</p>
+                <p className="font-medium text-sm">{tierInfo.label}</p>
               </div>
               {tier === "free" && (
-                <Button as="a" href="/pricing" size="sm"
-                  className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-[#060d18] font-bold">
-                  Upgrade
-                </Button>
+                <Button as="a" href="/pricing" size="sm" color="primary">Upgrade</Button>
               )}
             </div>
-
             {isAdmin && (
-              <div className="py-3 border-b border-[#00b4ff]/10">
-                <p className="text-xs text-[#64748b] uppercase tracking-wider mb-0.5">Role</p>
-                <Chip size="sm" className="bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20">Administrator</Chip>
+              <div className="py-3 border-b border-default-100">
+                <p className="text-xs text-default-400 uppercase tracking-wider mb-0.5">Role</p>
+                <Chip size="sm" color="warning" variant="flat">Administrator</Chip>
               </div>
             )}
-
             <div className="py-3">
-              <p className="text-xs text-[#64748b] uppercase tracking-wider mb-0.5">Member Since</p>
-              <p className="text-white">
-                {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—"}
+              <p className="text-xs text-default-400 uppercase tracking-wider mb-0.5">Member Since</p>
+              <p className="text-sm">
+                {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "-"}
               </p>
             </div>
           </CardBody>
         </Card>
 
         {/* Display name */}
-        <Card className="card-glass mb-5" radius="lg">
+        <Card className="border border-default-200 bg-content1 mb-5" shadow="none">
           <CardHeader className="px-5 pt-5 pb-0">
             <div className="flex items-center gap-2">
-              <Icon icon="solar:pen-bold" className="text-[#f59e0b]" width={20} />
-              <h2 className="font-bold text-white">Display Name</h2>
+              <Icon icon="solar:pen-linear" className="text-warning" width={18} />
+              <h2 className="font-semibold text-sm">Display Name</h2>
             </div>
           </CardHeader>
           <CardBody className="p-5 gap-4">
-            <Input
-              label="Display Name"
-              value={displayName}
-              onValueChange={setDisplayName}
-              placeholder={user.email?.split("@")[0]}
-              variant="bordered"
-              classNames={inputClassNames}
-            />
+            <Input label="Display Name" value={displayName} onValueChange={setDisplayName}
+              placeholder={user.email?.split("@")[0]} variant="bordered"
+              classNames={{ inputWrapper: "border-default-300" }} />
             {profileMsg && (
-              <p className={`text-sm ${profileMsg.includes("!") ? "text-[#22c55e]" : "text-[#ef4444]"}`}>{profileMsg}</p>
+              <p className={`text-sm ${profileMsg.includes("!") ? "text-success" : "text-danger"}`}>{profileMsg}</p>
             )}
-            <Button onPress={handleSaveProfile} isLoading={savingProfile}
-              className="bg-[#00b4ff]/10 text-[#00b4ff] border border-[#00b4ff]/20 self-start">
+            <Button onPress={handleSaveProfile} isLoading={savingProfile} variant="flat" color="primary" className="self-start">
               Save Changes
             </Button>
           </CardBody>
         </Card>
 
         {/* Change password */}
-        <Card className="card-glass mb-5" radius="lg">
+        <Card className="border border-default-200 bg-content1 mb-5" shadow="none">
           <CardHeader className="px-5 pt-5 pb-0">
             <div className="flex items-center gap-2">
-              <Icon icon="solar:lock-password-bold" className="text-[#22c55e]" width={20} />
-              <h2 className="font-bold text-white">Change Password</h2>
+              <Icon icon="solar:lock-password-linear" className="text-success" width={18} />
+              <h2 className="font-semibold text-sm">Change Password</h2>
             </div>
           </CardHeader>
           <CardBody className="p-5">
             <form onSubmit={handleChangePassword} className="flex flex-col gap-4">
               <Input type="password" label="New Password" value={newPw} onValueChange={setNewPw}
-                minLength={6} isRequired variant="bordered" classNames={inputClassNames} />
+                minLength={6} isRequired variant="bordered" classNames={{ inputWrapper: "border-default-300" }} />
               <Input type="password" label="Confirm New Password" value={confirmPw} onValueChange={setConfirmPw}
-                isRequired variant="bordered" classNames={inputClassNames} />
-              {pwErr && <p className="text-sm text-[#ef4444]">{pwErr}</p>}
-              {pwMsg && <p className="text-sm text-[#22c55e]">{pwMsg}</p>}
-              <Button type="submit" isLoading={pwLoading}
-                className="bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20 self-start">
+                isRequired variant="bordered" classNames={{ inputWrapper: "border-default-300" }} />
+              {pwErr && <p className="text-sm text-danger">{pwErr}</p>}
+              {pwMsg && <p className="text-sm text-success">{pwMsg}</p>}
+              <Button type="submit" isLoading={pwLoading} variant="flat" color="success" className="self-start">
                 Update Password
               </Button>
             </form>
@@ -183,21 +162,20 @@ export default function SettingsClient({ user, profile }: Props) {
         </Card>
 
         {/* Danger zone */}
-        <Card className="card-glass border-[#ef4444]/20" radius="lg">
+        <Card className="border border-danger/30 bg-content1" shadow="none">
           <CardHeader className="px-5 pt-5 pb-0">
             <div className="flex items-center gap-2">
-              <Icon icon="solar:danger-bold" className="text-[#ef4444]" width={20} />
-              <h2 className="font-bold text-[#ef4444]">Danger Zone</h2>
+              <Icon icon="solar:danger-circle-linear" className="text-danger" width={18} />
+              <h2 className="font-semibold text-sm text-danger">Danger Zone</h2>
             </div>
           </CardHeader>
           <CardBody className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-white text-sm">Delete Account</p>
-                <p className="text-xs text-[#64748b] mt-0.5">Permanently delete your account and all data. This cannot be undone.</p>
+                <p className="font-medium text-sm">Delete Account</p>
+                <p className="text-xs text-default-400 mt-0.5">Permanently delete your account and all data.</p>
               </div>
-              <Button size="sm" variant="flat" className="bg-[#ef4444]/10 text-[#ef4444] border border-[#ef4444]/20"
-                onPress={() => setDeleteOpen(true)}>
+              <Button size="sm" variant="flat" color="danger" onPress={() => setDeleteOpen(true)}>
                 Delete
               </Button>
             </div>
@@ -205,22 +183,19 @@ export default function SettingsClient({ user, profile }: Props) {
         </Card>
       </div>
 
-      {/* Delete confirm modal */}
-      <Modal isOpen={deleteOpen} onOpenChange={setDeleteOpen} size="sm"
-        classNames={{ base: "bg-[#0a1628] border border-[#ef4444]/20" }}>
+      <Modal isOpen={deleteOpen} onOpenChange={setDeleteOpen} size="sm">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="text-[#ef4444]">Delete Account?</ModalHeader>
+              <ModalHeader className="text-danger">Delete Account?</ModalHeader>
               <ModalBody>
-                <p className="text-[#64748b] text-sm">
+                <p className="text-default-500 text-sm">
                   This will permanently delete your account, portfolio, watchlist, and all settings. This cannot be undone.
                 </p>
               </ModalBody>
               <ModalFooter>
-                <Button variant="flat" onPress={onClose} className="text-[#64748b]">Cancel</Button>
-                <Button onPress={handleDeleteAccount} isLoading={deleteLoading}
-                  className="bg-[#ef4444] text-white font-bold">
+                <Button variant="flat" onPress={onClose}>Cancel</Button>
+                <Button onPress={handleDeleteAccount} isLoading={deleteLoading} color="danger">
                   Yes, Delete Everything
                 </Button>
               </ModalFooter>

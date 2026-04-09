@@ -9,7 +9,7 @@ interface Props {
   color?: string;
 }
 
-export default function PriceChart({ data, height = 120, color = "#00b4ff" }: Props) {
+export default function PriceChart({ data, height = 120, color = "#3b82f6" }: Props) {
   const { points, minPrice, maxPrice, isPositive } = useMemo(() => {
     if (!data.length) return { points: "", minPrice: 0, maxPrice: 0, isPositive: true };
     const prices = data.map((d) => d.price);
@@ -42,7 +42,7 @@ export default function PriceChart({ data, height = 120, color = "#00b4ff" }: Pr
 
   if (!data.length) {
     return (
-      <div className="flex items-center justify-center h-24 text-[#64748b] text-sm">
+      <div className="flex items-center justify-center h-24 text-default-400 text-sm">
         No price data available
       </div>
     );
@@ -58,30 +58,25 @@ export default function PriceChart({ data, height = 120, color = "#00b4ff" }: Pr
       >
         <defs>
           <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={lineColor} stopOpacity="0.25" />
-            <stop offset="100%" stopColor={lineColor} stopOpacity="0.01" />
+            <stop offset="0%" stopColor={lineColor} stopOpacity="0.15" />
+            <stop offset="100%" stopColor={lineColor} stopOpacity="0" />
           </linearGradient>
         </defs>
-
-        {/* Fill under the line */}
         <polyline
           points={`8,${height} ${points} ${592},${height}`}
           fill={`url(#${fillId})`}
           stroke="none"
         />
-
-        {/* Line */}
         <polyline
           points={points}
           fill="none"
           stroke={lineColor}
-          strokeWidth="2"
+          strokeWidth="1.5"
           strokeLinejoin="round"
           strokeLinecap="round"
         />
       </svg>
-
-      <div className="flex justify-between text-xs text-[#64748b] mt-1 px-2">
+      <div className="flex justify-between text-xs text-default-400 mt-1 px-1">
         <span>${minPrice.toLocaleString()}</span>
         <span>${maxPrice.toLocaleString()}</span>
       </div>
