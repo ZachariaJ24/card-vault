@@ -9,10 +9,10 @@ import {
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
-import { SparklineCell } from "@/components/heroui-pro";
+import { SparklineCell, SportBadge } from "@/components/heroui-pro";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { MOCK_CARDS, SPORTS_LIST, TRENDING_CHANGES, MOCK_VOLUMES, generateSparkline } from "@/lib/mock-data";
-import { formatCurrency, formatChange, sportEmoji } from "@/lib/utils";
+import { formatCurrency, formatChange, playerInitials } from "@/lib/utils";
 import type { Card as CardType } from "@/lib/types";
 
 const PAGE_SIZE = 12;
@@ -166,12 +166,12 @@ export default function MarketPage() {
                       <TableCell>
                         <HeroUser
                           name={card.player_name ?? card.name}
-                          description={`${card.card_set ?? card.sport} · ${card.year ?? ""}`}
+                          description={<span className="flex items-center gap-1.5"><SportBadge sport={card.sport} size="xs" /><span>{card.card_set ?? card.sport} &middot; {card.year ?? ""}</span></span>}
                           avatarProps={{
                             radius: "sm",
                             size: "sm",
-                            name: sportEmoji(card.sport),
-                            classNames: { base: "bg-default-100 text-lg" },
+                            name: playerInitials(card.player_name),
+                            classNames: { base: "bg-default-200 text-[0.6rem] font-bold text-default-500" },
                           }}
                           classNames={{
                             name: "text-xs font-medium",

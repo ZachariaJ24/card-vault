@@ -4,9 +4,9 @@ import { Card, CardBody, Chip } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
-import { KpiCard } from "@/components/heroui-pro";
+import { KpiCard, SportBadge } from "@/components/heroui-pro";
 import { MOCK_CARDS, TRENDING_CHANGES } from "@/lib/mock-data";
-import { formatCurrency, formatChange, sportEmoji } from "@/lib/utils";
+import { formatCurrency, formatChange } from "@/lib/utils";
 
 const ALL = MOCK_CARDS.map((c, i) => ({ ...c, change_pct: TRENDING_CHANGES[i % TRENDING_CHANGES.length] }));
 const GAINERS = [...ALL].sort((a, b) => b.change_pct - a.change_pct);
@@ -30,7 +30,7 @@ function MoverTable({ cards, type }: { cards: typeof ALL; type: "gainer" | "lose
           </tr></thead>
           <tbody>{cards.map((c) => (
             <tr key={c.id} className="border-b border-default-100 hover:bg-default-50 transition-colors">
-              <td className="px-4 py-2.5"><Link href={`/card/${c.id}`} className="flex items-center gap-2 hover:text-primary transition-colors"><span className="text-sm">{sportEmoji(c.sport)}</span><span className="text-xs font-medium">{c.player_name}</span></Link></td>
+              <td className="px-4 py-2.5"><Link href={`/card/${c.id}`} className="flex items-center gap-2 hover:text-primary transition-colors"><SportBadge sport={c.sport} size="xs" /><span className="text-xs font-medium">{c.player_name}</span></Link></td>
               <td className="px-4 py-2.5 text-right font-mono font-semibold text-xs">{formatCurrency(c.base_price)}</td>
               <td className={`px-4 py-2.5 text-right font-mono font-medium text-xs ${c.change_pct >= 0 ? "text-success" : "text-danger"}`}>{formatChange(c.change_pct)}</td>
             </tr>

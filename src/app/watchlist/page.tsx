@@ -8,9 +8,9 @@ import {
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
-import { SparklineCell } from "@/components/heroui-pro";
+import { SparklineCell, SportBadge } from "@/components/heroui-pro";
 import { MOCK_CARDS, TRENDING_CHANGES, generateSparkline } from "@/lib/mock-data";
-import { formatCurrency, formatChange, sportEmoji } from "@/lib/utils";
+import { formatCurrency, formatChange, playerInitials } from "@/lib/utils";
 
 const WATCHED = MOCK_CARDS.slice(0, 6).map((c, i) => ({
   ...c,
@@ -66,8 +66,8 @@ export default function WatchlistPage() {
                         avatarProps={{
                           radius: "sm",
                           size: "sm",
-                          name: sportEmoji(card.sport),
-                          classNames: { base: "bg-default-100 text-lg" },
+                          name: playerInitials(card.player_name),
+                          classNames: { base: "bg-default-200 text-[0.6rem] font-bold text-default-500" },
                         }}
                         classNames={{
                           name: "text-xs font-medium",

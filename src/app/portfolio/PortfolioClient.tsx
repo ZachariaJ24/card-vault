@@ -9,11 +9,11 @@ import {
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { KpiCard, AreaChartCard, type ChartDataPoint } from "@/components/heroui-pro";
+import { KpiCard, AreaChartCard, SportBadge, type ChartDataPoint } from "@/components/heroui-pro";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import type { Portfolio, Card as CardType } from "@/lib/types";
-import { formatCurrency, formatChange, sportEmoji } from "@/lib/utils";
+import { formatCurrency, formatChange } from "@/lib/utils";
 import { GRADE_OPTIONS, MOCK_CARDS, generatePriceHistory } from "@/lib/mock-data";
 
 interface Props {
@@ -150,7 +150,7 @@ export default function PortfolioClient({ user, isAdmin, portfolio, availableCar
                         <tr key={item.id} className="border-b border-default-100 hover:bg-default-50 transition-colors">
                           <td className="py-2.5">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm">{sportEmoji(card?.sport ?? null)}</span>
+                              <SportBadge sport={card?.sport ?? null} size="xs" />
                               <div>
                                 <div className="text-xs font-medium">{card?.name ?? "Unknown"}</div>
                                 <div className="text-[0.65rem] text-default-400">{card?.sport}</div>

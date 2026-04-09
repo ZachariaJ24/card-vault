@@ -13,7 +13,7 @@ import { KpiCard } from "@/components/heroui-pro";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { User } from "@supabase/supabase-js";
 import type { Card as CardType, Profile } from "@/lib/types";
-import { sportEmoji } from "@/lib/utils";
+import { SportBadge } from "@/components/heroui-pro";
 import { SPORTS_LIST } from "@/lib/mock-data";
 
 interface Props {
@@ -100,7 +100,7 @@ export default function AdminClient({ user, stats, cards, profiles }: Props) {
                     <td className="px-4 py-2.5 text-xs font-medium">{card.name}</td>
                     <td className="px-4 py-2.5 text-xs text-default-400 hidden md:table-cell">{card.player_name ?? "-"}</td>
                     <td className="px-4 py-2.5 text-xs text-default-400 hidden lg:table-cell">{card.card_set ?? "-"}{card.year ? ` · ${card.year}` : ""}</td>
-                    <td className="px-4 py-2.5"><Chip size="sm" variant="flat" classNames={{ content: "text-[0.6rem]" }}>{sportEmoji(card.sport)} {card.sport ?? "-"}</Chip></td>
+                    <td className="px-4 py-2.5"><span className="flex items-center gap-1.5"><SportBadge sport={card.sport} size="xs" /><span className="text-[0.65rem]">{card.sport ?? "-"}</span></span></td>
                     <td className="px-4 py-2.5 text-right"><div className="flex justify-end gap-1"><Button size="sm" isIconOnly variant="light" color="primary" onPress={() => openEdit(card)}><Icon icon="solar:pen-linear" width={13} /></Button><Button size="sm" isIconOnly variant="light" color="danger" onPress={() => setDeleteId(card.id)}><Icon icon="solar:trash-bin-trash-linear" width={13} /></Button></div></td>
                   </tr>
                 ))}</tbody></table></div></CardBody></Card>

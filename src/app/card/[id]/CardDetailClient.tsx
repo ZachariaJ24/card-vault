@@ -5,11 +5,11 @@ import { Button, Card, CardBody, CardHeader, Chip, Tab, Tabs, Divider, cn } from
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
-import { AreaChartCard, KpiCard, type ChartDataPoint } from "@/components/heroui-pro";
+import { AreaChartCard, KpiCard, SportBadge, type ChartDataPoint } from "@/components/heroui-pro";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import type { Card as CardType, MockPricePoint } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
-import { formatCurrency, formatChange, sportEmoji } from "@/lib/utils";
+import { formatCurrency, formatChange, playerInitials } from "@/lib/utils";
 
 interface Props {
   card: CardType;
@@ -100,8 +100,8 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
         {/* Top: Price header bar */}
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-default-100 border border-default-200 text-3xl">
-              {sportEmoji(card.sport)}
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-default-100 border border-default-200">
+              <span className="text-lg font-bold font-mono text-default-400">{playerInitials(card.player_name)}</span>
             </div>
             <div>
               <h1 className="text-lg font-semibold">{card.player_name ?? card.name}</h1>
@@ -275,7 +275,7 @@ export default function CardDetailClient({ card, chartData, user, inWatchlist: i
             <Card className="border border-default-200 bg-content1">
               <CardBody className="p-4">
                 <div className="w-full aspect-[2.5/3.5] rounded-lg bg-default-100 border border-default-200 flex items-center justify-center mb-3">
-                  <span className="text-5xl">{sportEmoji(card.sport)}</span>
+                  <span className="text-3xl font-bold font-mono text-default-300">{playerInitials(card.player_name)}</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5 justify-center">
                   {card.sport && <Chip size="sm" variant="flat" classNames={{ content: "text-[0.6rem]" }}>{card.sport}</Chip>}

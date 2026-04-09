@@ -15,10 +15,10 @@ export function formatChange(pct: number): string {
   return `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
 }
 
-export function sportEmoji(sport: string | null): string {
-  const map: Record<string, string> = {
-    Hockey: "🏒", Baseball: "⚾", Basketball: "🏀",
-    Football: "🏈", Soccer: "⚽", Pokemon: "⚡",
-  };
-  return map[sport ?? ""] ?? "🃏";
+/** Get 1-2 letter initials from a player name */
+export function playerInitials(name: string | null): string {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  return name.slice(0, 2).toUpperCase();
 }
