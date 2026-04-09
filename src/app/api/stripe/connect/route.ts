@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 /**
  * POST /api/stripe/connect
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
   if (!accountId) {
     // Create a new Connect Express account
-    const account = await stripe.accounts.create({
+    const account = await getStripe().accounts.create({
       type: "express",
       email,
       capabilities: {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
   // Create an account link for onboarding
   const origin = req.headers.get("origin") ?? "http://localhost:3000";
-  const accountLink = await stripe.accountLinks.create({
+  const accountLink = await getStripe().accountLinks.create({
     account: accountId,
     refresh_url: `${origin}/settings?stripe=refresh`,
     return_url: `${origin}/settings?stripe=success`,
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Check with Stripe if onboarding is complete
-  const account = await stripe.accounts.retrieve(profile.stripe_account_id);
+  const account = await getStripe().accounts.retrieve(profile.stripe_account_id);
   const onboarded = account.charges_enabled && account.payouts_enabled;
 
   // Update our DB if status changed

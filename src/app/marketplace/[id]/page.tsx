@@ -9,7 +9,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { SportBadge } from "@/components/heroui-pro";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { playerInitials } from "@/lib/utils";
-import { PLATFORM_FEE_PERCENT } from "@/lib/stripe";
+const PLATFORM_FEE_PERCENT = 1;
 import type { Listing } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
 
