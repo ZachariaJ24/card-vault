@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Input, Card, CardBody, Divider } from "@heroui/react";
+import { Button, Input, Card, CardBody, Divider, Chip } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { ScrollingTicker } from "@/components/heroui-pro";
+import { TICKER_DATA } from "@/lib/mock-data";
 
 type Mode = "login" | "signup" | "reset";
 
@@ -26,23 +28,20 @@ export default function LoginPage() {
     setError("");
     setMessage("");
     setLoading(true);
-
     try {
       if (mode === "reset") {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/settings`,
-        });
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/settings` });
         if (error) throw error;
         setMessage("Check your email for a reset link.");
       } else if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.push("/dashboard");
+        router.push("/");
         router.refresh();
       } else {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        setMessage("Account created! Check your email to confirm, then sign in.");
+        setMessage("Account created! Check email to confirm, then sign in.");
         setMode("login");
       }
     } catch (err: unknown) {
@@ -52,139 +51,111 @@ export default function LoginPage() {
     }
   }
 
-  const titles: Record<Mode, string> = {
-    login: "Welcome back",
-    signup: "Create your account",
-    reset: "Reset password",
-  };
-  const subtitles: Record<Mode, string> = {
-    login: "Sign in to your CardVault account",
-    signup: "Start tracking your collection for free",
-    reset: "Enter your email to receive a reset link",
-  };
+  const titles: Record<Mode, string> = { login: "Sign in", signup: "Create account", reset: "Reset password" };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary font-black text-sm text-white">
-              CV
-            </div>
-            <span className="text-xl font-semibold">CardVault</span>
-          </Link>
-          <p className="text-default-500 text-sm mt-3">{subtitles[mode]}</p>
-        </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Ticker at top for brand feel */}
+      <ScrollingTicker items={TICKER_DATA} />
 
-        <Card className="border border-default-200 bg-content1" shadow="sm">
-          <CardBody className="p-6">
-            <h1 className="text-lg font-semibold mb-5">{titles[mode]}</h1>
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-sm">
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary font-black text-sm text-black">
+                CV
+              </div>
+              <span className="text-xl font-semibold tracking-tight">CardVault</span>
+            </Link>
+            <p className="text-default-400 text-sm">
+              {mode === "login" && "Sign in to access the market"}
+              {mode === "signup" && "Start tracking your collection"}
+              {mode === "reset" && "We'll send you a reset link"}
+            </p>
+          </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                type="email"
-                label="Email"
-                value={email}
-                onValueChange={setEmail}
-                placeholder="you@example.com"
-                isRequired
-                autoComplete="email"
-                variant="bordered"
-                startContent={<Icon icon="solar:letter-linear" className="text-default-400" width={18} />}
-                classNames={{ inputWrapper: "border-default-300" }}
-              />
+          <Card className="border border-default-200 bg-content1" shadow="sm">
+            <CardBody className="p-6">
+              <h1 className="text-base font-semibold mb-4">{titles[mode]}</h1>
 
-              {mode !== "reset" && (
+              <form onSubmit={handleSubmit} className="space-y-3">
                 <Input
-                  type={showPassword ? "text" : "password"}
-                  label="Password"
-                  value={password}
-                  onValueChange={setPassword}
-                  placeholder="Enter password"
+                  type="email"
+                  label="Email"
+                  value={email}
+                  onValueChange={setEmail}
+                  placeholder="you@example.com"
                   isRequired
-                  minLength={6}
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  autoComplete="email"
                   variant="bordered"
-                  startContent={<Icon icon="solar:lock-password-linear" className="text-default-400" width={18} />}
-                  endContent={
-                    <button type="button" onClick={() => setShowPassword((s) => !s)} className="text-default-400 hover:text-foreground">
-                      <Icon icon={showPassword ? "solar:eye-closed-linear" : "solar:eye-linear"} width={18} />
-                    </button>
-                  }
+                  size="sm"
+                  startContent={<Icon icon="solar:letter-linear" className="text-default-400" width={16} />}
                   classNames={{ inputWrapper: "border-default-300" }}
                 />
-              )}
 
-              {mode === "login" && (
-                <div className="text-right -mt-2">
-                  <button type="button" onClick={() => setMode("reset")}
-                    className="text-xs text-primary hover:underline">
-                    Forgot password?
-                  </button>
-                </div>
-              )}
+                {mode !== "reset" && (
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    label="Password"
+                    value={password}
+                    onValueChange={setPassword}
+                    placeholder="Enter password"
+                    isRequired
+                    minLength={6}
+                    autoComplete={mode === "login" ? "current-password" : "new-password"}
+                    variant="bordered"
+                    size="sm"
+                    startContent={<Icon icon="solar:lock-password-linear" className="text-default-400" width={16} />}
+                    endContent={
+                      <button type="button" onClick={() => setShowPassword((s) => !s)} className="text-default-400 hover:text-foreground">
+                        <Icon icon={showPassword ? "solar:eye-closed-linear" : "solar:eye-linear"} width={16} />
+                      </button>
+                    }
+                    classNames={{ inputWrapper: "border-default-300" }}
+                  />
+                )}
 
-              {error && (
-                <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-danger/10 text-danger text-sm">
-                  <Icon icon="solar:danger-circle-linear" width={16} className="shrink-0" />
-                  {error}
-                </div>
-              )}
+                {mode === "login" && (
+                  <div className="text-right -mt-1">
+                    <button type="button" onClick={() => setMode("reset")} className="text-[0.7rem] text-primary hover:underline">
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
 
-              {message && (
-                <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-success/10 text-success text-sm">
-                  <Icon icon="solar:check-circle-linear" width={16} className="shrink-0" />
-                  {message}
-                </div>
-              )}
+                {error && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-danger/10 text-danger text-xs">
+                    <Icon icon="solar:danger-circle-linear" width={14} className="shrink-0" />
+                    {error}
+                  </div>
+                )}
+                {message && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-success/10 text-success text-xs">
+                    <Icon icon="solar:check-circle-linear" width={14} className="shrink-0" />
+                    {message}
+                  </div>
+                )}
 
-              <Button
-                type="submit"
-                isLoading={loading}
-                fullWidth
-                color="primary"
-                className="font-medium mt-1"
-              >
-                {loading ? "Please wait..." : mode === "login" ? "Sign In" : mode === "signup" ? "Create Account" : "Send Reset Link"}
-              </Button>
-            </form>
+                <Button type="submit" isLoading={loading} fullWidth color="primary" size="sm" className="font-medium mt-1">
+                  {loading ? "Please wait..." : mode === "login" ? "Sign In" : mode === "signup" ? "Create Account" : "Send Reset Link"}
+                </Button>
+              </form>
 
-            <Divider className="my-5" />
+              <Divider className="my-4" />
 
-            <div className="text-center text-sm text-default-500">
-              {mode === "login" && (
-                <>
-                  Don&apos;t have an account?{" "}
-                  <button onClick={() => { setMode("signup"); setError(""); setMessage(""); }}
-                    className="text-primary hover:underline font-medium">
-                    Sign up free
-                  </button>
-                </>
-              )}
-              {mode === "signup" && (
-                <>
-                  Already have an account?{" "}
-                  <button onClick={() => { setMode("login"); setError(""); setMessage(""); }}
-                    className="text-primary hover:underline font-medium">
-                    Sign in
-                  </button>
-                </>
-              )}
-              {mode === "reset" && (
-                <button onClick={() => { setMode("login"); setError(""); setMessage(""); }}
-                  className="text-primary hover:underline font-medium">
-                  &larr; Back to sign in
-                </button>
-              )}
-            </div>
-          </CardBody>
-        </Card>
+              <div className="text-center text-xs text-default-500">
+                {mode === "login" && (<>No account? <button onClick={() => { setMode("signup"); setError(""); setMessage(""); }} className="text-primary hover:underline font-medium">Sign up free</button></>)}
+                {mode === "signup" && (<>Have an account? <button onClick={() => { setMode("login"); setError(""); setMessage(""); }} className="text-primary hover:underline font-medium">Sign in</button></>)}
+                {mode === "reset" && (<button onClick={() => { setMode("login"); setError(""); setMessage(""); }} className="text-primary hover:underline font-medium">&larr; Back to sign in</button>)}
+              </div>
+            </CardBody>
+          </Card>
 
-        <p className="text-center text-xs text-default-400 mt-5">
-          Midnight Studios &middot; By signing up you agree to our{" "}
-          <Link href="/pricing" className="hover:underline">Terms</Link>
-        </p>
+          <p className="text-center text-[0.65rem] text-default-400 mt-4">
+            Midnight Studios &middot; <Link href="/pricing" className="hover:underline">Terms</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
